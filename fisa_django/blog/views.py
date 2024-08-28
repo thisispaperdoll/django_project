@@ -40,7 +40,7 @@ class PostCreate(CreateView):
     #             return redirect('/blog/')
 
 
-        return super().form_valid(form)
+    #    return super().form_valid(form)
     
 class PostDetail(DetailView):
     model = Post 

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "blog",
     "board", # 마지막 줄에도 기왕이면 ,를 적어주세요
+    "account",
 ]
 
 MIDDLEWARE = [
