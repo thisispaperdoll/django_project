@@ -15,6 +15,7 @@
             top: 0; /* Position the navbar at the top of the page */
             width: 100%; /* Full width */
             }
+
     </style>
 </head>
 <body>
@@ -38,13 +39,15 @@
                     <span class="text-secondary fw-bold"> <a href="{% url 'account_change_password' %}">{{ user.username }} </a> </span>&nbsp;
                     {# 로그아웃 버튼 #}
                     <a class="btn btn-secondary" href="{% url 'account_logout' %}" role="button">로그아웃</a>&nbsp;&nbsp;
-                {% else %}
+                    {# 회원탈퇴 버튼 #}
+                    <a class="btn btn-secondary" href="{% url 'blog_app:user_delete' %}" role="button">회원탈퇴</a>&nbsp;&nbsp;
+                    
+                    {% else %}
                 {# 로그아웃 상태이면 #}
                     {# 로그인 버튼 #}
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#loginModal"><a href="{% url 'account_login' %}">로그인</a>
-                    {# 회원 가입 버튼 #}&nbsp;&nbsp;
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#loginModal"><a href="{% url 'account_signup' %}">회원가입</a>
-                        <!-- <a class="btn btn-secondary" href="/accounts/signup" role="button">로그아웃2</a>&nbsp;&nbsp; -->
+                    <a class="btn btn-secondary" href="{% url 'account_login' %}" role="button">로그인</a>&nbsp;&nbsp;
+                    {# 회원 가입 버튼 #}
+                    <a class="btn btn-secondary" href="{% url 'account_signup' %}" role="button">회원가입</a>&nbsp;&nbsp;
                 {% endif %}
             </div>
         </div>
@@ -56,7 +59,7 @@
 {% endblock %}
 
 <!-- Footer-->
-<div id="footer" class="bg-dark py-4 mt-auto">
+<div id="footer" class="bg-dark py-4 mt-auto fixed-bottom">
     <div class="container px-5">
         <div class="row align-items-center justify-content-between flex-column flex-sm-row">
             <div class="col-auto"><div class="small m-0 text-white">Copyright &copy; YEONJIKIM 2024</div></div>

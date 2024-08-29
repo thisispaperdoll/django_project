@@ -1,8 +1,16 @@
 from django.forms import BaseModelForm
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Post
 from django.views.generic import ListView, DetailView, CreateView
+
+# 회원탈퇴
+from django.views.decorators.http import require_POST
+from django.contrib.auth import logout as auth_logout 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login # authenticate : 인가, login : 인증 담당
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 
 class PostCreate(CreateView):
@@ -71,3 +79,14 @@ def about_me(request): # 함수를 만들고, 그 함수를 도메인 주소 뒤
         request,
         'blog/about_me.html'
     )
+
+def user_delete(request):
+    # 로그인 상태 확인
+    if request.user.is_authenticated:
+        # user.delete() 호출
+        request.user.delete()
+ 
+        # 로그아웃 
+        auth_logout(request) # 세션 지우기
+        # 원래 페이지로 로그인 상태로 원상복귀 
+        return redirect('blog_app:about_me')
