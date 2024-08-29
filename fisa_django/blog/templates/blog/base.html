@@ -29,9 +29,22 @@
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="{% url 'blog_app:about_me' %}">About me</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'blog_app:post_list' %}">blog</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#three">Technical Editor</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#three">Technical Editor</a></li>             
                 </ul>
 
+                {% if user.is_authenticated %}   
+                {# 로그인 상태이면 #}
+                    {# 본인 ID #}
+                    {{ user.usename }}
+                    {# 로그아웃 버튼 #}
+                    <a href="#"><button value="로그아웃"></button></a>
+                {% else %}
+                {# 로그아웃 상태이면 #}
+                    {# 로그인 버튼 #}
+                    <a href="/account/login"><button value="로그인"></button></a>
+                    {# 회원 가입 버튼 #}
+                    <a href="/account/signup"><button value="회원가입"></button></a>
+                {% endif %}
             </div>
         </div>
     </nav>

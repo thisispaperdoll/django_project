@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "blog",
     "board", # 마지막 줄에도 기왕이면 ,를 적어주세요
-    "account",
+    # "account",
+    'allauth',
+    'allauth.account',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +54,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+
 ]
 
 ROOT_URLCONF = "fisa_django.urls"
@@ -74,6 +78,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "fisa_django.wsgi.application"
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -113,10 +124,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # 향후 django app 내에서 현재시각을 사용할 때는 
 # datetime 대신 아래 방식으로 시간을 사용해주세요
 now = timezone.now()
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-kr"
 
 TIME_ZONE = 'Asia/Seoul'
 
+# i18n은 "internationalization"의 약자로, 장고에서 다국어 지원 및 지역화 기능을 제공합니다. 이를 통해 웹 애플리케이션이 여러 언어와 문화권에서 사용될 수 있도록 합니다. 주요 기능은 다음과 같습니다:
+# 번역: 텍스트를 여러 언어로 번역할 수 있습니다.
+# 지역화: 날짜, 시간, 숫자, 통화 등의 형식을 사용자의 지역에 맞게 변환합니다.
+# 언어 선택: 사용자가 선호하는 언어를 선택할 수 있게 합니다.
 USE_I18N = True
 
 USE_TZ = False
