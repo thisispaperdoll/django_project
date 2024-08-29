@@ -150,6 +150,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '_media') 
-'blog/post-list'
+# 'blog/post-list'
 # LOGIN_REDIRECT_URL =  # locahost:8000/login/account/blog/post-list
 LOGIN_REDIRECT_URL = 'blog_app:post_list'  # 로그인성공시 보내줄 리다이렉트 주소

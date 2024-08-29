@@ -6,9 +6,9 @@ app_name= 'blog_app'  # blog_app:blog  -> localhost:8000/blog/post-list
 # url 'blog_app:about_me'  localhost:8000/blog/about-me 
 urlpatterns = [
     # blog 앱 내부의 경로를 지정할 부분
-    path('', views.index), # localhost:8000/blog 경로, 경로를 호출하면 실행할 함수의 위치
+    # path('', views.index), # localhost:8000/blog 경로, 경로를 호출하면 실행할 함수의 위치
     path('post-list', views.PostList.as_view(), name='post_list'), #  name= 개발자가 이 주소를 부를 이름
-    path('about-me', views.about_me, name='about_me'),
+    path('', views.about_me, name='about_me'), # blog_app:about_me     blog/
     path('<int:pk>', views.PostDetail.as_view()), # <자료형:필드명> 
     path('create-post/', views.PostCreate.as_view())
 ]
