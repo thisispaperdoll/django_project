@@ -5,15 +5,22 @@ from .models import Post
 from django.views.generic import ListView, DetailView, CreateView
 
 # 회원탈퇴
-from django.views.decorators.http import require_POST
-from django.contrib.auth import logout as auth_logout 
-from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST   # POST 방식으로만 접근해야하는 함수 앞에 적어줍니다.
+from django.contrib.auth import logout as auth_logout # logout을 담당하는 함수
 from django.contrib.auth import authenticate, login # authenticate : 인가, login : 인증 담당
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
+from django.contrib.auth.decorators import login_required # 인증을 확인해서 로그인상태에서만 접근할 수 있게 허가하는 데코레이터
+from django.core.exceptions import PermissionDenied  # 인가 - 권한이 없으면
 
+from django.contrib import messages # 예외나 상황에 대한 메시지 처리 
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-class PostCreate(CreateView):
+# Mixin이라는 부가 기능들을 확인하기 위해 다중상속으로 주 기능을 확장하는 별도의 클래스 
+# 주기능을 가진 클래스 앞에 작성해줍니다. 
+# Mixin은 상속이라기 보다는 포함, 확장이라는 개념으로 생각할 수 있다.
+# 장고의 Mixin-메인 기능(비즈니스 로직)에 
+# 인증, 로그 등 여러 부가 기능 사용 위해 다중상속 가능케하는 클래스
+# 클래스에 Mixin 사용시 다른 클래스의 메서드 추가 가능
+class PostCreate(LoginRequiredMixin, CreateView):
     model = Post 
     fields = ["title", "content", "head_image"]
 
