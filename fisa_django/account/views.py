@@ -10,15 +10,25 @@ def user_login(request): # 주소줄로 요청을 받아서 일할거야
         # 폼에서 데이터를 받아서 유효성 검사
         form = LoginForm(request.POST)
         if form.is_valid():
-            # 비우고
-            cd = form.cleaned_data 
+            cd = form.cleaned_data # dict 형식으로 form에서 온 데이터를 정제해주는 속성            print(cd)
+
             # 입력받은 username, password를 DB와 일치하는지 확인
             user = authenticate(request, username=cd['username'], password=cd['password'])
             if user is not None:
                 if user.is_active:
                     login(request, user)
 
-                    response = HttpResponse('인증 성공ㄴ') # 응답 객체 생성
+                    response = HttpResponse() # 응답 객체 생성
+                    
+                    # 쿠키
+                    response.set_cookie('user', user)
+                    response.set_cookie('testCookie', 'value testCookie')
+                    response.set_cookie('testCookie', 'value testCookie2')
+                    
+                    # 세션
+                    request.session['testSession'] = 'value session'
+                
+                    response.content =f'로그인 되셨습니다! {request.COOKIES.get("user"), request.COOKIES.get("testCookie")} \n session: {request.session.get("testSession")} '
                     # 입력받은 user가 일치하면 response를 전달 로그인 되셨습니다!
                     return response
                 else:
