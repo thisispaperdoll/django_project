@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     # "account",
     'allauth',
     'allauth.account',
+    'crispy_forms',
+    "crispy_bootstrap5",
 ]
 
 MIDDLEWARE = [
@@ -153,3 +155,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, '_media')
 # 'blog/post-list'
 # LOGIN_REDIRECT_URL =  # locahost:8000/login/account/blog/post-list
 LOGIN_REDIRECT_URL = 'blog_app:post_list'  # 로그인성공시 보내줄 리다이렉트 주소
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
