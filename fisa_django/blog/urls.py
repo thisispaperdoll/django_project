@@ -10,6 +10,6 @@ urlpatterns = [
     path('post-list', views.PostList.as_view(), name='post_list'), #  name= 개발자가 이 주소를 부를 이름
     path('', views.about_me, name='about_me'), # blog_app:about_me     blog/
     path('<int:pk>', views.PostDetail.as_view()), # <자료형:필드명> 
-    path('create-post/', views.PostCreate.as_view()),
+    path('create-post/', views.PostCreate.as_view(), name="create"),
     path('user-delete/', views.user_delete, name='user_delete') # blog_app:user_delete
 ]

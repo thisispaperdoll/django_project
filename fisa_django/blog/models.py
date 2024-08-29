@@ -37,6 +37,7 @@ class Post(models.Model):
     # SET_NULL - User가 삭제되면 관련있는 Post 테이블의 모든 글에 author 항목은 NULL로 바뀜
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     tag = models.ManyToManyField(Tag)
+    file_upload = models.FileField(upload_to='blog/files/%Y/%m/%d/', blank=True)
 
     def __str__(self):
         return f'[[{self.pk}] {self.title}]'
@@ -44,6 +45,8 @@ class Post(models.Model):
     def get_absolute_url(self): 
         return f'/blog/{self.pk}'
 
+    def get_file_extension(self):
+        return f'{self.file_upload}'.split('.')[-1]
 
 
 
