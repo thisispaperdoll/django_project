@@ -20,9 +20,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # 장고의 Mixin-메인 기능(비즈니스 로직)에 
 # 인증, 로그 등 여러 부가 기능 사용 위해 다중상속 가능케하는 클래스
 # 클래스에 Mixin 사용시 다른 클래스의 메서드 추가 가능
+# User의 정보로 필드로 달아서 보내면 변조 가능성이 있기 때문에 view 단에서 처리합니다.
 class PostCreate(LoginRequiredMixin, CreateView):
     model = Post 
-    fields = ["title", "content", "head_image"]
+    fields = ["title", "content", "head_image", "file_upload"]
 
     # CreateView가 내장한 함수 - 오버라이딩 
     # tag는 참조관계이므로 Tag 테이블에 등록된 태그만 쓸 수 있는 상황
@@ -30,13 +31,13 @@ class PostCreate(LoginRequiredMixin, CreateView):
     # 저장된 포스트로 돌아오도록 
     def form_valid(self, form):
         current_user = self.request.user
-        if current_user.is_authenticated and (current_user.is_staff or current_user.is_superuser):
+        if current_user.is_authenticated and (current_user.is_active):
             form.instance.author = current_user
             response = super(PostCreate, self).form_valid(form)
 
             tags_str = self.request.POST.get('tags_str')
             if tags_str:
-                tags_str = tags_str.strip()   # 책, 독후감, 작가명
+                tags_str = tags_str.strip()   # 책; 독후감, 작가명
 
                 tags_str = tags_str.replace(',', ';')
                 tags_list = tags_str.split(';')
