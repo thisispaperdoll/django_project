@@ -2,7 +2,7 @@ from django.forms import BaseModelForm
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import Post, Tag, Comment
-
+from .forms import CommentForm
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.utils.text import slugify
 # 회원탈퇴
@@ -123,6 +123,8 @@ class PostDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["now"] = '임의로 작성한 새로운 변수'
+        context["comment_form"] = CommentForm
+        
         print(context["now"] )
         return context
 
@@ -170,3 +172,35 @@ def tag_posts(request, slug): # URL로 전달받은 slug 변수를 아규먼트�
         posts = Post.objects.filter(tag=tag)
     return render(request, 'blog/post_list.html', {'post_list': posts})  # 템플릿 재사용
 
+
+ # 댓글 작성 - 글의 번호 blog/30/
+def create_comment(request, pk):
+    # GET / POST 서로 다른 결과 return 
+    # 로그인 상태 확인 
+    if request.user.is_authenticated:
+        post = Post.objects.get(pk=pk)
+
+        # POST 리턴 -> Comment 테이블에 값 업데이트
+        if request.method == 'POST':
+            comment_form = CommentForm(request.POST) # 작성한 content 
+            if comment_form.is_valid():
+                comment = comment_form.save(commit=False) # 객체는 만들었으나 아직 DB에 반영하지 않은 상태
+                comment.post = post # 임시 저장상태로 field로 입력받지 않은 값들을 추가
+                comment.author = request.user  # 임시 저장상태로 field로 입력받지 않은 값들을 추가
+                comment.save()
+                return redirect(comment.get_absolute_url())
+        else:
+            return redirect(post.get_absolute_url())
+    else:
+        raise PermissionDenied
+
+
+    
+
+
+# 댓글 수정 - 댓글의 번호
+class CommentUpdate(LoginRequiredMixin, UpdateView):
+    model = Comment
+
+class CommentDelete(LoginRequiredMixin, DeleteView):
+    model = Comment
