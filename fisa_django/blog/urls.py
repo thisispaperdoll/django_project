@@ -9,7 +9,7 @@ urlpatterns = [
     # path('', views.index), # localhost:8000/blog 경로, 경로를 호출하면 실행할 함수의 위치
     path('post-list/', views.PostList.as_view(paginate_by=5), name='post_list'), #  name= 개발자가 이 주소를 부를 이름
     path('', views.about_me, name='about_me'), # blog_app:about_me     blog/
-    path('<int:pk>', views.PostDetail.as_view()), # <자료형:필드명> 
+    path('<int:pk>/', views.PostDetail.as_view()), # <자료형:필드명> 
     path('create-post/', views.PostCreate.as_view(), name="create"),  # blog_app:create
     # update, delete는 이미 있는 글을 수정/삭제하므로 글번호가 필요합니다. 
     path('edit-post/<int:pk>', views.PostUpdate.as_view(), name='update'),
@@ -28,6 +28,8 @@ urlpatterns = [
     # 댓글 수정 - 댓글의 번호
     path('update-comment/<int:pk>', views.CommentUpdate.as_view(), name='update_comment'),
     # 댓글 삭제
-    path('delete-comment/<int:pk>',  views.CommentDelete.as_view(), name='delete_comment'),
+    path('delete-comment/<int:pk>',  views.delete_comment, name='delete_comment'),
 
+    # 검색을 위한 주소
+    path("search/<str:q>/", views.PostSearch.as_view(), name="post_search"),
 ]

@@ -1,3 +1,5 @@
+from typing import Any
+from django.db.models.query import QuerySet, Q # 장고 orm에서 쿼리문처럼 or and 조건을 좀더 편하게 쓰게 만들어놓은 클래스
 from django.forms import BaseModelForm
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -14,6 +16,7 @@ from django.core.exceptions import PermissionDenied  # 인가 - 권한이 없으
 
 from django.contrib import messages # 예외나 상황에 대한 메시지 처리 
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 # Mixin: 부가 기능들을 사용하기 위해 다중상속으로 주 기능을 확장하는 별도의 클래스 
 # 주기능을 가진 클래스 앞에 작성해줍니다. (혹시나 주기능을 덮어쓰지 못하게, 먼저 확인하고 넘어가게)
@@ -134,6 +137,14 @@ class PostList(ListView):   # post_list.html, post-list
     ordering = '-pk' 
     context_object_name = 'post_list'
 
+class PostSearch(PostList):
+    paginate_by = None
+    def get_queryset(self):
+        q = self.kwargs['q'] # q='new'
+        # title에 있거나, content에 있거나, tag에 있거나 and & / or |
+        post_list =  Post.objects.filter(Q(title__contains=q) | Q(content__contains=q) | Q(tag__tag_name__contains=q))
+        return post_list
+  
 def index(request): # 함수를 만들고, 그 함수를 도메인 주소 뒤에 달아서 호출하는 구조
     posts = Post.objects.all()
     return render(
@@ -195,12 +206,28 @@ def create_comment(request, pk):
         raise PermissionDenied
 
 
-    
-
 
 # 댓글 수정 - 댓글의 번호
+# comment_form.html 
 class CommentUpdate(LoginRequiredMixin, UpdateView):
     model = Comment
+    form_class = CommentForm
+    
+    # 로그인한 상태에서 작성자(request.user) 가 object.author(Post.objects.get(pk=pk))과 일치하는지 확인 필요
+    def dispatch(self, request, *args, **kwargs): # 방문자가 GET으로 요청했는데 POST로 요청했는지 확인하는 기능
+        if request.user.is_authenticated and request.user == self.get_object().author:
+            return super(CommentUpdate, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied # 권한 없는 사람이 글 수정하려 하면 403
 
-class CommentDelete(LoginRequiredMixin, DeleteView):
-    model = Comment
+
+def delete_comment(request, pk):
+    comment = Comment.objects.get(pk=pk) # comment 객체 가져옴
+    post = comment.post
+
+    # 로그인 된 상태이고, comment.author 이면 
+    if request.user.is_authenticated and request.user == comment.author:
+            comment.delete()
+            return redirect(post.get_absolute_url())  # /blog/32
+    else:
+        raise PermissionDenied

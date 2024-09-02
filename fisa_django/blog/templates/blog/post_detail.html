@@ -69,7 +69,7 @@
                                         <div class="card my-4">
                                             <h5 class="card-header">댓글</h5>
                                             <div class="card-body">
-                                                {% if user.is_authenticated %} {# /blog/29/create-comment}
+                                                {% if user.is_authenticated %} {# /blog/29/create-comment #}
                                                     <form id="comment-form" method="POST" action="{{ post.get_absolute_url }}/create-comment">
                                                         {% csrf_token %}
                                                         <div class="form-group">
@@ -93,7 +93,7 @@
                                                                 <a role="button"
                                                                    class="btn btn-sm btn-secondary"
                                                                    id="comment-{{ comment.pk }}-update-btn"
-                                                                   href="/blog/update-comment/{{ comment.pk }}/">
+                                                                   href="/blog/update-comment/{{ comment.pk }}">
                                                                     수정
                                                                 </a>
                                                                 <a role="button"
@@ -132,8 +132,8 @@
                                                             &nbsp;&nbsp;<small class="text-muted">{{ comment.created_at }}</small>
                                                         </h5>
                                                         <p>{{ comment.content | linebreaks }}</p>
-                                                        {% if comment.created_at != comment.modified_at %}
-                                                            <p class="text-muted float-right"><small>Updated: {{ comment.modified_at }}</small></p>
+                                                        {% if comment.created_at != comment.updated_at %}
+                                                            <p class="text-muted float-right"><small>Updated: {{ comment.updated_at }}</small></p>
                                                         {% endif %}
                                                     </div>
                                                 </div>
