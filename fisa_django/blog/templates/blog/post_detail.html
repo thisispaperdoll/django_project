@@ -2,9 +2,9 @@
 {% load static %}
 {% block page_area %}
 
-{% if user.is_authenticated and user.username == post.author %}
-<a class="btn btn-secondary" href="/blog/edit-post" role="button">수정</a>&nbsp;&nbsp;          
-                      <a class="btn btn-secondary" href="/blog/delete-post" role="button">삭제</a>&nbsp;&nbsp;          
+{% if user.is_authenticated and user == post.author %}
+            <a class="btn btn-secondary" href="/blog/edit-post" role="button">수정</a>&nbsp;&nbsp;          
+            <a class="btn btn-secondary" href="/blog/delete-post" role="button">삭제</a>&nbsp;&nbsp;          
                   {% endif %}
 
                             <!-- Post content-->
@@ -15,9 +15,12 @@
                                     <h1 class="fw-bolder mb-1">{{ post.title }}</h1>
                                     <!-- Post meta content-->
                                     <div class="text-muted fst-italic mb-2">{{ post.created_at }}</div>
-                                    <!-- Post categories-->
-                                    <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
-                                    <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
+                                    <!-- Post categories tag가 있는 글이면 해당 tag가 보여지도록 반복문으로 끄집어내주세요. post.tag.tag_name -->
+                                    {% if post.tag.exists %}
+                                        {% for tag in post.tag.all %}
+                                            <a class="badge bg-secondary text-decoration-none link-light" href="{{ tag.get_absolute_url }}">{{ tag.tag_name }} {{ tag.post_set.count }} </a>
+                                        {% endfor %}
+                                    {% endif %}
                                 </header>
                                 <!-- Preview image figure-->
                                 {% if post.header_img %}

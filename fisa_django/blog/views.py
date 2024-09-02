@@ -2,7 +2,8 @@ from django.forms import BaseModelForm
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import Post, Tag, Comment
-from django.views.generic import ListView, DetailView, CreateView
+
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.utils.text import slugify
 # 회원탈퇴
 from django.views.decorators.http import require_POST   # POST 방식으로만 접근해야하는 함수 앞에 적어줍니다.
@@ -55,9 +56,67 @@ class PostCreate(LoginRequiredMixin, CreateView):
         else:
                 return redirect('/blog/')
 
-
-    #    return super().form_valid(form)
+class PostUpdate(LoginRequiredMixin, UpdateView):
+    model = Post
+    fields = ['title', 'content', 'head_image', 'file_upload']
     
+    # 로그인한 상태에서 작성자(request.user) 가 object.author(Post.objects.get(pk=pk))과 일치하는지 확인 필요
+    def dispatch(self, request, *args, **kwargs): # 방문자가 GET으로 요청했는데 POST로 요청했는지 확인하는 기능
+        if request.user.is_authenticated and request.user == self.get_object().author:
+            return super(PostUpdate, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied # 권한 없는 사람이 글 수정하려 하면 403
+
+    # author 필드는 당연히 이전에 글을 생성한 작성자로 채워져있고, 
+    # LoginRequiredMixin으로 로그인한 유저 확인하므로 form_valid는 오버라이딩하지 않음
+    # 태그에 여러개 보내면 겹치지 않는 것만 새로 성성하는 기능은 필요하므로 get_context_data를 오버라이딩
+    def get_context_data(self, **kwargs):
+        context = super(PostUpdate, self).get_context_data()
+        if self.object.tag.exists():
+            tags_str_list = list()
+            for t in self.object.tag.all():
+                tags_str_list.append(t.tag_name)
+            context['tags_str_default'] = '; '.join(tags_str_list)
+
+        return context
+
+    # 포스트에 태그를 추가하려면 이미 데이터베이스에 저장된 pk를 부여받아서 수정해야 함, 
+    # 그래서 form_valid()를 통해 결과를 response 변수에 임시 담아두고
+    # 서로 저장된 포스트를 self.object로 저장함.
+    def form_valid(self, form):
+        response = super(PostUpdate, self).form_valid(form)
+        self.object.tag.clear()
+
+        tags_str = self.request.POST.get('tags_str')
+        if tags_str:
+            tags_str = tags_str.strip()
+            tags_str = tags_str.replace(',', ';')
+            tags_list = tags_str.split(';')
+
+            for t in tags_list:
+                t = t.strip()
+                tag, is_tag_created = Tag.objects.get_or_create(tag_name=t)
+                if is_tag_created:
+                    tag.slug = slugify(t, allow_unicode=True)
+                    tag.save()
+                self.object.tag.add(tag)
+
+        return response
+        
+class PostDelete(LoginRequiredMixin, DeleteView):
+    model = Post 
+    success_url = '/blog/'
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.author == request.user:
+            success_url = self.get_success_url()
+            self.object.delete()
+            return redirect(success_url)
+        else:
+            raise PermissionDenied
+        
+
 class PostDetail(DetailView):
     model = Post 
     
@@ -99,3 +158,15 @@ def user_delete(request):
         auth_logout(request) # 세션 지우기
         # 원래 페이지로 로그인 상태로 원상복귀 
         return redirect('blog_app:about_me')
+    
+# path('tag/<str:slug>', views.tag_posts, name="tag"), # <자료형:필드명> 
+def tag_posts(request, slug): # URL로 전달받은 slug 변수를 아규먼트로 사용
+    # 태그가 없는 경우
+    if slug == "no-tag":
+        posts = Post.objects.filter(tag=None)
+    # 태그가 있는 경우
+    else:
+        tag = Tag.objects.get(slug=slug) # tag를 포함한 Object를 추려냄
+        posts = Post.objects.filter(tag=tag)
+    return render(request, 'blog/post_list.html', {'post_list': posts})  # 템플릿 재사용
+
