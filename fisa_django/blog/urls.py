@@ -19,7 +19,7 @@ urlpatterns = [
 
     path('user-delete/', views.user_delete, name='user_delete'), # blog_app:user_delete
     # 같은 tag를 가진 글끼리 게시판에 보여주기
-    path('tag/<str:slug>', views.tag_posts, name="tag"), # <자료형:필드명> 
+    path('tag/<str:slug>/', views.tag_posts, name="tag"), # <자료형:필드명> 
 
     # 댓글은 글에 딸려있습니다.
     # 댓글 조회 -> post-detail.html 안에서 동작하도록

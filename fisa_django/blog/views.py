@@ -142,7 +142,8 @@ class PostSearch(PostList):
     def get_queryset(self):
         q = self.kwargs['q'] # q='new'
         # title에 있거나, content에 있거나, tag에 있거나 and & / or |
-        post_list =  Post.objects.filter(Q(title__contains=q) | Q(content__contains=q) | Q(tag__tag_name__contains=q))
+        post_list =  Post.objects.filter(Q(title__contains=q) | Q(content__contains=q) | Q(tag__tag_name__contains=q))\
+            .select_related('author')
         return post_list
   
 def index(request): # 함수를 만들고, 그 함수를 도메인 주소 뒤에 달아서 호출하는 구조
@@ -180,7 +181,10 @@ def tag_posts(request, slug): # URL로 전달받은 slug 변수를 아규먼트�
     # 태그가 있는 경우
     else:
         tag = Tag.objects.get(slug=slug) # tag를 포함한 Object를 추려냄
-        posts = Post.objects.filter(tag=tag)
+        # posts = Post.objects.filter(tag=tag)
+        # 쿼리 최적화를 위해서 ForeignKey나 일대일 관계로 연결된 테이블 데이터를 미리 가져오는 메서드
+        # 한번에 데이터를 저장해놓고 필요할 때 가져다 쓸 수 있습니다.
+        posts = Post.objects.filter(tag=tag).select_related('author')
     return render(request, 'blog/post_list.html', {'post_list': posts})  # 템플릿 재사용
 
 
