@@ -3,8 +3,33 @@
 {% block page_area %}
 
 {% if user.is_authenticated and user == post.author %}
-            <a class="btn btn-secondary" href="/blog/edit-post" role="button">수정</a>&nbsp;&nbsp;          
-            <a class="btn btn-secondary" href="/blog/delete-post" role="button">삭제</a>&nbsp;&nbsp;          
+            <a class="btn btn-secondary" href="/blog/edit-post/{{ post.pk }}" role="button">수정</a>&nbsp;&nbsp;          
+            {# GET / POST 요청에 대한 return이 다른 경우임 #}
+            {# <a class="btn btn-secondary" href="/blog/delete-post/{{ post.pk }}" role="button">삭제</a>&nbsp;&nbsp;        #}
+            <!-- Button to open the modal -->
+            <a class="btn btn-danger" href="#" role="button" data-bs-toggle="modal" data-bs-target="#deleteModal">삭제</a>&nbsp;&nbsp;
+
+            <!-- The Modal -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">삭제 확인</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            정말 삭제하시겠습니까?
+                        </div>
+                        <div class="modal-footer">
+                            <form method="POST" action="{% url 'blog_app:delete' post.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">예</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">아니오</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
                   {% endif %}
 
                             <!-- Post content-->

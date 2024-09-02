@@ -105,7 +105,7 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
         
 class PostDelete(LoginRequiredMixin, DeleteView):
     model = Post 
-    success_url = '/blog/'
+    success_url = '/blog/post-list/'
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
