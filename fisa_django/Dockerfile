@@ -46,5 +46,12 @@ RUN rm -rf /app/tests /app/docs
 ENV DJANGO_SETTINGS_MODULE=fisa_django.settings
 ENV PYTHONUNBUFFERED=1
 
-# # Gunicorn을 사용하여 애플리케이션 실행
-# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "fisa_django.wsgi:application"]
+# Gunicorn을 사용하여 애플리케이션 실행
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "fisa_django.wsgi:application"]
+
+## 3시 40분까지
+## 1) docker image로 만드셔서 {본인도커허브명}/django-project:v1
+## 2) 되는지 run 명령어로 확인하시고 locahost:8000 으로 접속도 해보세요
+## 3) ec2 컨테이너를 하나 만들어서 {본인이름명}-django-ec2
+## 4) 그 안에서 run 명령어로 띄우고
+## 5) ip 주소로 접속까지 해주세요
